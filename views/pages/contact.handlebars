@@ -1,0 +1,81 @@
+<div class="container py-5">
+  <div class="text-center mb-4">
+    <h2 class="fw-bold">Contact <span class="text-primary">Us</span> 📩</h2>
+    <p class="lead">We'd love to hear from you!</p>
+  </div>
+
+{{#if successMessage}}
+  <div class="alert alert-success mt-3 text-center">{{successMessage}}</div>
+{{/if}}
+
+{{#if errorMessage}}
+  <div class="alert alert-danger mt-3 text-center">{{errorMessage}}</div>
+{{/if}}
+
+  <div class="row justify-content-center">
+  <div class="col-md-6">
+    <form class="card p-4 shadow-lg rounded-4" action="/send-message" method="POST">
+      <div class="mb-3">
+        <label for="name" class="form-label">Your Name</label>
+        <input
+          type="text"
+          class="form-control"
+          id="name"
+          name="name"
+          placeholder="Enter your name"
+          required
+        />
+      </div>
+      <div class="mb-3">
+        <label for="email" class="form-label">Email address</label>
+        <input
+          type="email"
+          class="form-control"
+          id="email"
+          name="email"
+          placeholder="name@gmail.com"
+          required
+        />
+      </div>
+      <div class="mb-3">
+        <label for="message" class="form-label">Message</label>
+        <textarea
+          class="form-control"
+          id="message"
+          name="message"
+          rows="4"
+          placeholder="Your message here..."
+          required
+        ></textarea>
+      </div>
+      <button type="submit" class="btn btn-primary w-100">Send Message</button>
+    </form>
+  </div>
+</div>
+
+      <div class="text-center mt-4">
+        <h5>Reach us on</h5>
+        <a
+          href="https://t.me/Meda_Sport_Ethiopia"
+          target="_blank"
+          class="text-decoration-none mx-2 fs-3 text-info"
+        >
+          <i class="bi bi-telegram"></i>
+        </a>
+        <a
+          href="https://m.facebook.com/meda_sport_ethiopia"
+          target="_blank"
+          class="text-decoration-none mx-2 fs-3 text-primary"
+        >
+          <i class="bi bi-facebook"></i>
+        </a>
+        <a
+          href="mailto:medasport.support@gmail.com"
+          class="text-decoration-none mx-2 fs-3 text-danger"
+        >
+          <i class="bi bi-envelope-fill"></i>
+        </a>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,92 @@
+<div class="container py-5 d-flex justify-content-center">
+  <div class="card shadow-lg border-0" style="max-width: 800px; width: 100%; border-radius: 15px; background: var(--bg-card);">
+    <div class="ratio ratio-16x9">
+      <iframe
+        src="{{highlight.youtube_link}}"
+        title="{{highlight.title}}"
+        allowfullscreen
+        style="border-top-left-radius: 15px; border-top-right-radius: 15px;"
+      ></iframe>
+    </div>
+
+    <div class="card-body p-4">
+      <h2 class="card-title mb-3 fw-bold">{{highlight.title}}</h2>
+
+      <div class="d-flex flex-wrap gap-2 mb-4">
+        <span class="stat-counter-badge"><i class="bi bi-eye"></i> {{highlight.views}} Views</span>
+        <button id="likeBtn" class="btn btn-sm stat-counter-badge {{#if hasLiked}}like-active{{/if}}">
+          <i class="bi bi-heart-fill"></i> <span id="likeCount">{{highlight.likes}}</span> Likes
+        </button>
+        <span class="stat-counter-badge"><i class="bi bi-calendar"></i> {{highlight.created_at}}</span>
+      </div>
+
+      <p class="card-text mb-4" style="font-size: 1.1rem; line-height: 1.6; white-space: pre-wrap; color: var(--text-secondary);">
+        {{highlight.description}}
+      </p>
+
+      <hr class="my-4">
+
+      <!-- Comments Section -->
+      <h4 class="fw-bold mb-3"><i class="bi bi-chat-dots-fill text-primary"></i> Comments ({{comments.length}})</h4>
+      
+      <!-- Comment Form -->
+      <form action="/highlights/{{highlight.id}}/comment" method="POST" class="mb-4">
+        <div class="row g-2">
+          <div class="col-md-4 mb-2">
+            <input type="text" name="name" class="form-control" placeholder="Your Name" required>
+          </div>
+          <div class="col-12 mb-2">
+            <textarea name="comment_text" class="form-control" rows="3" placeholder="Share your thoughts on this highlight..." required></textarea>
+          </div>
+          <div class="col-12">
+            <button type="submit" class="btn btn-primary px-4 py-2 rounded-pill"><i class="bi bi-send-fill me-1"></i> Post Comment</button>
+          </div>
+        </div>
+      </form>
+
+      <!-- Comments List -->
+      <div class="comments-list">
+        {{#each comments}}
+          <div class="card p-3 comment-card">
+            <div class="d-flex justify-content-between align-items-center mb-1">
+              <strong class="text-primary">{{this.name}}</strong>
+              <small class="text-muted"><i class="bi bi-clock"></i> {{this.created_at}}</small>
+            </div>
+            <p class="mb-0 text-secondary">{{this.comment_text}}</p>
+          </div>
+        {{else}}
+          <div class="text-center py-4 text-muted">
+            <i class="bi bi-chat-left-quote fs-2 mb-2"></i>
+            <p class="mb-0">No comments yet. Be the first to comment!</p>
+          </div>
+        {{/each}}
+      </div>
+
+      <div class="text-end mt-4">
+        <a href="/highlights" class="btn btn-outline-primary px-4 py-2 fw-semibold rounded-pill">
+          ⬅ Back to Highlights
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.getElementById('likeBtn').addEventListener('click', async function() {
+    const btn = this;
+    try {
+      const response = await fetch('/highlights/{{highlight.id}}/like', { method: 'POST' });
+      const data = await response.json();
+      if (data.success) {
+        document.getElementById('likeCount').textContent = data.likes;
+        if (data.liked) {
+          btn.classList.add('like-active');
+        } else {
+          btn.classList.remove('like-active');
+        }
+      }
+    } catch (err) {
+      console.error("Error liking highlight:", err);
+    }
+  });
+</script>

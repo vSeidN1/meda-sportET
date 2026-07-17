@@ -1,0 +1,113 @@
+<div class="container py-5 d-flex justify-content-center">
+  <div
+    class="card shadow-lg border-0"
+    style="max-width: 800px; width: 100%; border-radius: 15px; background: var(--bg-card);"
+  >
+    <img
+      src="{{post.image}}"
+      class="card-img"
+      alt="{{post.title}}"
+      style="max-height: 420px; object-fit: cover; border-top-left-radius: 15px; border-top-right-radius: 15px;"
+    />
+
+    <div class="card-body p-4">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <span class="badge bg-secondary" style="font-size: 0.9rem;">{{post.category}}</span>
+      </div>
+
+      <h2 class="card-title mb-3 fw-bold" style="color: var(--text-primary);">
+        {{post.title}}
+      </h2>
+
+      <div class="d-flex flex-wrap gap-2 mb-4">
+        <span class="stat-counter-badge"><i class="bi bi-person-fill"></i> By {{post.author}}</span>
+        <span class="stat-counter-badge"><i class="bi bi-eye"></i> {{post.views}} Views</span>
+        <button id="likeBtn" class="btn btn-sm stat-counter-badge {{#if hasLiked}}like-active{{/if}}">
+          <i class="bi bi-heart-fill"></i> <span id="likeCount">{{post.likes}}</span> Likes
+        </button>
+      </div>
+
+      <p class="card-text text-dark" style="font-size: 1.1rem; line-height: 1.8; white-space: pre-wrap; color: var(--text-secondary) !important;">
+        {{{post.summary}}}
+      </p>
+
+      <!-- Author Bio Details at bottom of post -->
+      <div class="d-flex align-items-center gap-3 p-3 mt-4 rounded-4 border" style="background-color: var(--accent-light) !important; border-color: var(--border-color) !important;">
+        <div class="rounded-circle text-white d-flex align-items-center justify-content-center" style="width: 48px; height: 48px; background-color: var(--accent-color) !important;">
+          <i class="bi bi-person-fill fs-4"></i>
+        </div>
+        <div>
+          <h6 class="mb-0 fw-bold" style="color: var(--text-primary);">Published by {{post.author}}</h6>
+          <small class="text-secondary">MedaSport Contributor</small>
+        </div>
+      </div>
+
+      <hr class="my-4">
+
+      <!-- Comments Section -->
+      <h4 class="fw-bold mb-3"><i class="bi bi-chat-dots-fill text-primary"></i> Comments ({{comments.length}})</h4>
+      
+      <!-- Comment Form -->
+      <form action="/news/{{post.id}}/comment" method="POST" class="mb-4">
+        <div class="row g-2">
+          <div class="col-md-4 mb-2">
+            <input type="text" name="name" class="form-control" placeholder="Your Name" required>
+          </div>
+          <div class="col-12 mb-2">
+            <textarea name="comment_text" class="form-control" rows="3" placeholder="Share your thoughts on this article..." required></textarea>
+          </div>
+          <div class="col-12">
+            <button type="submit" class="btn btn-primary px-4 py-2 rounded-pill"><i class="bi bi-send-fill me-1"></i> Post Comment</button>
+          </div>
+        </div>
+      </form>
+
+      <!-- Comments List -->
+      <div class="comments-list">
+        {{#each comments}}
+          <div class="card p-3 comment-card">
+            <div class="d-flex justify-content-between align-items-center mb-1">
+              <strong class="text-primary">{{this.name}}</strong>
+              <small class="text-muted"><i class="bi bi-clock"></i> {{this.created_at}}</small>
+            </div>
+            <p class="mb-0 text-secondary">{{this.comment_text}}</p>
+          </div>
+        {{else}}
+          <div class="text-center py-4 text-muted">
+            <i class="bi bi-chat-left-quote fs-2 mb-2"></i>
+            <p class="mb-0">No comments yet. Be the first to comment!</p>
+          </div>
+        {{/each}}
+      </div>
+
+      <div class="text-end mt-4">
+        <a
+          href="/"
+          class="btn btn-outline-primary px-4 py-2 fw-semibold rounded-pill"
+        >
+          ⬅ Back to Home
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.getElementById('likeBtn').addEventListener('click', async function() {
+    const btn = this;
+    try {
+      const response = await fetch('/news/{{post.id}}/like', { method: 'POST' });
+      const data = await response.json();
+      if (data.success) {
+        document.getElementById('likeCount').textContent = data.likes;
+        if (data.liked) {
+          btn.classList.add('like-active');
+        } else {
+          btn.classList.remove('like-active');
+        }
+      }
+    } catch (err) {
+      console.error("Error liking post:", err);
+    }
+  });
+</script>

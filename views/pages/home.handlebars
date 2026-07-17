@@ -1,0 +1,128 @@
+<link
+  rel="stylesheet"
+  href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
+/>
+
+<div class="card border-0 rounded-4 p-5 mb-5 shadow-lg bg-light text-center animate__animated animate__fadeInDown hero-custom-card" style="background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(59, 130, 246, 0.1)) !important;">
+  <div class="container py-3">
+    <h1 class="fw-extrabold animate__animated animate__zoomIn display-5 tracking-tight mb-3">
+      Welcome to <span class="text-primary fw-bold">MedaSport</span> 🇪🇹
+    </h1>
+    <p class="lead animate__animated animate__fadeInUp mb-0 fw-semibold text-secondary">
+      Trusted football news across all leagues, clubs, and continents ⚽🌍
+    </p>
+  </div>
+</div>
+
+<div class="container">
+  <div class="mx-auto" style="max-width: 1140px;">
+
+    <!-- Featured Section -->
+    <div id="featuredNewsCarousel" class="carousel slide shadow-lg mb-5" data-bs-ride="carousel">
+      <div class="carousel-inner rounded-4 overflow-hidden">
+        {{#each featuredPosts}}
+          <div class="carousel-item {{#if @first}}active{{/if}}">
+            <img
+              src="{{this.image}}"
+              class="d-block w-100 img-fluid"
+              style="height: 480px; object-fit: cover;"
+              alt="{{this.title}}"
+              loading="lazy"
+            />
+            <div class="carousel-caption d-none d-md-block rounded-4 px-4 py-3" style="max-width: 75%; bottom: 30px; left: 50%; transform: translateX(-50%); background: rgba(15, 23, 42, 0.75); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1);">
+              <div class="d-flex justify-content-between align-items-center mb-2">
+                <span class="badge bg-danger text-white fw-bold px-3 py-1.5" style="font-size: 0.8rem;">
+                  🚨 {{this.category}}
+                </span>
+                <span class="text-white-50 small"><i class="bi bi-clock me-1"></i> Featured</span>
+              </div>
+              <h4 class="fw-bold text-white mb-3 text-truncate">{{this.title}}</h4>
+              <div class="d-flex justify-content-between align-items-center">
+                <div class="d-flex gap-3 text-white-50 small align-items-center">
+                  <span><i class="bi bi-eye"></i> {{this.views}}</span>
+                  <span><i class="bi bi-heart-fill text-danger"></i> {{this.likes}}</span>
+                  <span><i class="bi bi-person-fill"></i> {{this.author}}</span>
+                </div>
+                <a href="/news/{{this.id}}" class="btn btn-sm btn-light fw-semibold rounded-pill px-4">Read Story</a>
+              </div>
+            </div>
+          </div>
+        {{/each}}
+      </div>
+
+      <button class="carousel-control-prev" type="button" data-bs-target="#featuredNewsCarousel" data-bs-slide="prev">
+        <span class="carousel-control-prev-icon bg-dark rounded-circle" aria-hidden="true"></span>
+        <span class="visually-hidden">Previous</span>
+      </button>
+      <button class="carousel-control-next" type="button" data-bs-target="#featuredNewsCarousel" data-bs-slide="next">
+        <span class="carousel-control-next-icon bg-dark rounded-circle" aria-hidden="true"></span>
+        <span class="visually-hidden">Next</span>
+      </button>
+    </div>
+
+    <!-- More News Section -->
+    <div class="text-center mb-5">
+      <h2 class="fw-bold"><i class="bi bi-newspaper text-primary me-2"></i> Latest News</h2>
+      <p class="text-muted">Stay up to date with the latest matches, transfers, and updates</p>
+      <hr class="w-25 mx-auto border-2 border-primary">
+    </div>
+
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 mb-5">
+      {{#each olderPosts}}
+        <div class="col">
+          <div class="card h-100 news-card border-0 shadow-sm d-flex flex-column">
+            <div style="position: relative;">
+              <img src="{{this.image}}" class="card-img-top" alt="..." style="height: 200px; object-fit: cover;">
+              <span class="badge bg-secondary position-absolute m-3 end-0 top-0" style="font-size: 0.75rem;">{{this.category}}</span>
+            </div>
+            <div class="card-body d-flex flex-column justify-content-between p-4">
+              <div>
+                <h5 class="card-title fw-bold mb-2" style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; line-height: 1.4;">{{this.title}}</h5>
+                <p class="card-text text-secondary small mb-3" style="display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; line-height: 1.5;">{{truncate this.summary 120}}</p>
+                <div class="d-flex align-items-center gap-2 mb-3">
+                  <div class="bg-light-subtle rounded-circle p-1 d-flex align-items-center justify-content-center border" style="width: 26px; height: 26px; background-color: var(--accent-light) !important;">
+                    <i class="bi bi-person text-primary" style="font-size: 0.8rem; color: var(--accent-color) !important;"></i>
+                  </div>
+                  <span class="text-secondary small fw-semibold">By {{this.author}}</span>
+                </div>
+              </div>
+              
+              <div class="d-flex justify-content-between align-items-center pt-3 border-top mt-auto">
+                <div class="d-flex gap-3">
+                  <span class="text-secondary small" title="Views"><i class="bi bi-eye"></i> {{this.views}}</span>
+                  <span class="text-secondary small" title="Likes"><i class="bi bi-heart-fill text-danger"></i> {{this.likes}}</span>
+                </div>
+                <a href="/news/{{this.id}}" class="btn btn-sm btn-outline-primary rounded-pill px-3 py-1.5 fw-semibold">Read More</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      {{/each}}
+    </div>
+
+    <!-- Pagination -->
+    {{#if totalPages}}
+      <nav aria-label="Page navigation" class="mb-5">
+        <ul class="pagination justify-content-center">
+          {{#if (gt currentPage 1)}}
+            <li class="page-item">
+              <a class="page-link rounded-circle mx-1 d-flex align-items-center justify-content-center" href="/?page={{subtract currentPage 1}}" style="width: 40px; height: 40px;"><i class="bi bi-chevron-left"></i></a>
+            </li>
+          {{/if}}
+
+          {{#each (createPagination totalPages currentPage)}}
+            <li class="page-item {{#if (eq this ../currentPage)}}active{{/if}}">
+              <a class="page-link rounded-circle mx-1 d-flex align-items-center justify-content-center" href="/?page={{this}}" style="width: 40px; height: 40px;">{{this}}</a>
+            </li>
+          {{/each}}
+
+          {{#if (lt currentPage totalPages)}}
+            <li class="page-item">
+              <a class="page-link rounded-circle mx-1 d-flex align-items-center justify-content-center" href="/?page={{add currentPage 1}}" style="width: 40px; height: 40px;"><i class="bi bi-chevron-right"></i></a>
+            </li>
+          {{/if}}
+        </ul>
+      </nav>
+    {{/if}}
+  </div>
+</div>
