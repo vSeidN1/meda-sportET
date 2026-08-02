@@ -28,7 +28,7 @@
         <span class="fw-bold tracking-tight">MedaSport 🇪🇹</span>
       </a>
 
-      <button class="navbar-toggler d-lg-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebarNav">
+      <button class="navbar-toggler d-lg-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebarNav" aria-controls="sidebarNav" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
 
@@ -111,83 +111,81 @@
           </li>
         </ul>
       </div>
-
-      <!-- Mobile Navigation Sidebar -->
-      <div class="offcanvas offcanvas-start custom-violet text-white d-lg-none" tabindex="-1" id="sidebarNav">
-        <div class="offcanvas-header border-bottom">
-          <div class="d-flex align-items-center gap-2">
-            <img src="/images/meda_sport_pic.jpg" alt="Logo" width="40" height="40" class="rounded-circle" />
-            <span class="fs-5 fw-bold">MedaSport 🇪🇹</span>
-          </div>
-          <div class="d-flex align-items-center gap-2">
-            <button class="theme-toggle-btn me-2" id="themeToggleBtnMobile" type="button" title="Toggle theme">
-              <i class="bi bi-sun-fill" id="themeIconMobile"></i>
-            </button>
-            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas"></button>
-          </div>
-        </div>
-
-        <div class="offcanvas-body">
-          <!-- Mobile Search -->
-          <form class="d-flex mb-4" action="/search" method="GET">
-            <div class="input-group">
-              <input class="form-control search-input-nav" type="search" placeholder="Search..." name="q"
-                aria-label="Search" required />
-              <button class="btn btn-outline-light search-btn-nav" type="submit"><i class="bi bi-search"></i></button>
-            </div>
-          </form>
-
-          <ul class="navbar-nav gap-2">
-            <li><a class="nav-link text-white {{#if (eq activePage 'home')}}active{{/if}}" href="/">Home</a></li>
-            <li><a class="nav-link text-white {{#if (eq activePage 'highlights')}}active{{/if}}"
-                href="/highlights">Highlights</a></li>
-            <li class="mt-2">
-              <a class="d-flex justify-content-between align-items-center text-white text-decoration-none fw-semibold"
-                data-bs-toggle="collapse" href="#collapseCompetitions" role="button">
-                Competitions <i class="bi bi-chevron-down"></i>
-              </a>
-              <div class="collapse mt-2 ps-3" id="collapseCompetitions">
-                <a class="nav-link text-white {{#if (eq activePage 'epl')}}active{{/if}}" href="/epl"><img
-                    src="/images/logos/epl.png" class="avatar-logo me-2" /> Premier League</a>
-                <a class="nav-link text-white {{#if (eq activePage 'laliga')}}active{{/if}}" href="/laliga"><img
-                    src="/images/logos/laliga.png" class="avatar-logo me-2" /> LaLiga</a>
-                <a class="nav-link text-white {{#if (eq activePage 'calcio')}}active{{/if}}" href="/calcio"><img
-                    src="/images/logos/serie a.webp" class="avatar-logo me-2" /> Serie A</a>
-                <a class="nav-link text-white {{#if (eq activePage 'bundesliga')}}active{{/if}}" href="/bundesliga"><img
-                    src="/images/logos/bundesliga.png" class="avatar-logo me-2" /> Bundesliga</a>
-                <a class="nav-link text-white {{#if (eq activePage 'ligue1')}}active{{/if}}" href="/ligue1"><img
-                    src="/images/logos/ligue1.png" class="avatar-logo me-2" /> Ligue 1</a>
-                <a class="nav-link text-white {{#if (eq activePage 'ucl')}}active{{/if}}" href="/ucl"><img
-                    src="/images/logos/ucl.png" class="avatar-logo me-2" /> Champions League</a>
-                <a class="nav-link text-white {{#if (eq activePage 'uel')}}active{{/if}}" href="/uel"><img
-                    src="/images/logos/uel.png" class="avatar-logo me-2" /> Europa League</a>
-              </div>
-            </li>
-            <hr class="text-white-50">
-            <li><a class="nav-link text-white {{#if (eq activePage 'about')}}active{{/if}}" href="/about">About US</a>
-            </li>
-            <li><a class="nav-link text-white {{#if (eq activePage 'contact')}}active{{/if}}"
-                href="/contact">Contact</a></li>
-            <hr class="text-white-50">
-
-            <li class="mt-2">
-              <a class="d-flex justify-content-between align-items-center text-white text-decoration-none fw-semibold"
-                data-bs-toggle="collapse" href="#collapseDashboard" role="button">
-                Dashboard <i class="bi bi-chevron-down"></i>
-              </a>
-              <div class="collapse mt-2 ps-3" id="collapseDashboard">
-                <a class="nav-link text-white {{#if (eq activePage 'admin/dashboard')}}active{{/if}}"
-                  href="/admin/dashboard">Admin Post</a>
-                <a class="nav-link text-white {{#if (eq activePage 'admin/highlights')}}active{{/if}}"
-                  href="/admin/highlights">Admin Highlights</a>
-                <a class="nav-link text-white" href="/admin/logout">Logout</a>
-              </div>
-            </li>
-          </ul>
-        </div>
-      </div>
     </div>
   </nav>
+
+  <div class="offcanvas offcanvas-start custom-violet text-white" tabindex="-1" id="sidebarNav" aria-labelledby="sidebarNavLabel">
+    <div class="offcanvas-header border-bottom">
+      <div class="d-flex align-items-center gap-2" id="sidebarNavLabel">
+        <img src="/images/meda_sport_pic.jpg" alt="Logo" width="40" height="40" class="rounded-circle" />
+        <span class="fs-5 fw-bold">MedaSport 🇪🇹</span>
+      </div>
+      <div class="d-flex align-items-center gap-2">
+        <button class="theme-toggle-btn me-2" id="themeToggleBtnMobile" type="button" title="Toggle theme">
+          <i class="bi bi-sun-fill" id="themeIconMobile"></i>
+        </button>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+      </div>
+    </div>
+
+    <div class="offcanvas-body">
+      <form class="d-flex mb-4" action="/search" method="GET">
+        <div class="input-group">
+          <input class="form-control search-input-nav" type="search" placeholder="Search..." name="q"
+            aria-label="Search" required />
+          <button class="btn btn-outline-light search-btn-nav" type="submit"><i class="bi bi-search"></i></button>
+        </div>
+      </form>
+
+      <ul class="navbar-nav gap-2">
+        <li><a class="nav-link text-white {{#if (eq activePage 'home')}}active{{/if}}" href="/">Home</a></li>
+        <li><a class="nav-link text-white {{#if (eq activePage 'highlights')}}active{{/if}}"
+            href="/highlights">Highlights</a></li>
+        <li class="mt-2">
+          <a class="d-flex justify-content-between align-items-center text-white text-decoration-none fw-semibold"
+            data-bs-toggle="collapse" href="#collapseCompetitions" role="button">
+            Competitions <i class="bi bi-chevron-down"></i>
+          </a>
+          <div class="collapse mt-2 ps-3" id="collapseCompetitions">
+            <a class="nav-link text-white {{#if (eq activePage 'epl')}}active{{/if}}" href="/epl"><img
+                src="/images/logos/epl.png" class="avatar-logo me-2" /> Premier League</a>
+            <a class="nav-link text-white {{#if (eq activePage 'laliga')}}active{{/if}}" href="/laliga"><img
+                src="/images/logos/laliga.png" class="avatar-logo me-2" /> LaLiga</a>
+            <a class="nav-link text-white {{#if (eq activePage 'calcio')}}active{{/if}}" href="/calcio"><img
+                src="/images/logos/serie a.webp" class="avatar-logo me-2" /> Serie A</a>
+            <a class="nav-link text-white {{#if (eq activePage 'bundesliga')}}active{{/if}}" href="/bundesliga"><img
+                src="/images/logos/bundesliga.png" class="avatar-logo me-2" /> Bundesliga</a>
+            <a class="nav-link text-white {{#if (eq activePage 'ligue1')}}active{{/if}}" href="/ligue1"><img
+                src="/images/logos/ligue1.png" class="avatar-logo me-2" /> Ligue 1</a>
+            <a class="nav-link text-white {{#if (eq activePage 'ucl')}}active{{/if}}" href="/ucl"><img
+                src="/images/logos/ucl.png" class="avatar-logo me-2" /> Champions League</a>
+            <a class="nav-link text-white {{#if (eq activePage 'uel')}}active{{/if}}" href="/uel"><img
+                src="/images/logos/uel.png" class="avatar-logo me-2" /> Europa League</a>
+          </div>
+        </li>
+        <hr class="text-white-50">
+        <li><a class="nav-link text-white {{#if (eq activePage 'about')}}active{{/if}}" href="/about">About US</a>
+        </li>
+        <li><a class="nav-link text-white {{#if (eq activePage 'contact')}}active{{/if}}"
+            href="/contact">Contact</a></li>
+
+        {{!-- <hr class="text-white-50">
+        <li class="mt-2">
+          <a class="d-flex justify-content-between align-items-center text-white text-decoration-none fw-semibold"
+            data-bs-toggle="collapse" href="#collapseDashboard" role="button">
+            Dashboard <i class="bi bi-chevron-down"></i>
+          </a>
+          <div class="collapse mt-2 ps-3" id="collapseDashboard">
+            <a class="nav-link text-white {{#if (eq activePage 'admin/dashboard')}}active{{/if}}"
+              href="/admin/dashboard">Admin Post</a>
+            <a class="nav-link text-white {{#if (eq activePage 'admin/highlights')}}active{{/if}}"
+              href="/admin/highlights">Admin Highlights</a>
+            <a class="nav-link text-white" href="/admin/logout">Logout</a>
+          </div>
+        </li> --}}
+      </ul>
+    </div>
+  </div>
 
   <main class="flex-grow-1">
     <div class="container py-4">
@@ -208,56 +206,56 @@
             class="bi bi-envelope-fill"></i></a>
       </div>
       <small class="footer-muted">
-  &copy; <span id="year"></span> MedaSport. All rights reserved.
-</small>
+        &copy; <span id="year"></span> MedaSport. All rights reserved.
+      </small>
     </div>
   </footer>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
   <script>
-  (function () {
-    const getTheme = () => localStorage.getItem('theme') || 'light';
+    (function () {
+      const getTheme = () => localStorage.getItem('theme') || 'light';
 
-    const updateIcons = (theme) => {
-      const icon = document.getElementById('themeIcon');
-      const iconMobile = document.getElementById('themeIconMobile');
+      const updateIcons = (theme) => {
+        const icon = document.getElementById('themeIcon');
+        const iconMobile = document.getElementById('themeIconMobile');
 
-      if (theme === 'dark') {
-        if (icon) icon.className = 'bi bi-moon-stars-fill';
-        if (iconMobile) iconMobile.className = 'bi bi-moon-stars-fill';
-      } else {
-        if (icon) icon.className = 'bi bi-sun-fill';
-        if (iconMobile) iconMobile.className = 'bi bi-sun-fill';
-      }
-    };
+        if (theme === 'dark') {
+          if (icon) icon.className = 'bi bi-moon-stars-fill';
+          if (iconMobile) iconMobile.className = 'bi bi-moon-stars-fill';
+        } else {
+          if (icon) icon.className = 'bi bi-sun-fill';
+          if (iconMobile) iconMobile.className = 'bi bi-sun-fill';
+        }
+      };
 
-    const setTheme = (theme) => {
+      const setTheme = (theme) => {
+        document.documentElement.setAttribute('data-theme', theme);
+        localStorage.setItem('theme', theme);
+        updateIcons(theme);
+      };
+      const theme = getTheme();
       document.documentElement.setAttribute('data-theme', theme);
-      localStorage.setItem('theme', theme);
       updateIcons(theme);
-    };
-    const theme = getTheme();
-    document.documentElement.setAttribute('data-theme', theme);
-    updateIcons(theme);
 
-    const handleToggle = () => {
-      const current = getTheme();
-      setTheme(current === 'dark' ? 'light' : 'dark');
-    };
+      const handleToggle = () => {
+        const current = getTheme();
+        setTheme(current === 'dark' ? 'light' : 'dark');
+      };
 
-    const btn = document.getElementById('themeToggleBtn');
-    if (btn) btn.addEventListener('click', handleToggle);
+      const btn = document.getElementById('themeToggleBtn');
+      if (btn) btn.addEventListener('click', handleToggle);
 
-    const btnMobile = document.getElementById('themeToggleBtnMobile');
-    if (btnMobile) btnMobile.addEventListener('click', handleToggle);
+      const btnMobile = document.getElementById('themeToggleBtnMobile');
+      if (btnMobile) btnMobile.addEventListener('click', handleToggle);
 
-    const year = document.getElementById('year');
-    if (year) {
-      year.textContent = new Date().getFullYear();
-    }
-  })();
-</script>
+      const year = document.getElementById('year');
+      if (year) {
+        year.textContent = new Date().getFullYear();
+      }
+    })();
+  </script>
 </body>
 
 </html>
