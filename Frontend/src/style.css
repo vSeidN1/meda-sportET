@@ -240,7 +240,7 @@ main {
   border-radius: 9px;
   flex: none;
 }
-.mobile-menu-button,
+.icon-button.mobile-menu-button,
 .mobile-menu {
   display: none;
 }
@@ -1217,7 +1217,7 @@ textarea.field {
   .brand {
     margin-right: auto;
   }
-  .mobile-menu-button {
+  .icon-button.mobile-menu-button {
     display: grid;
   }
   .mobile-menu {

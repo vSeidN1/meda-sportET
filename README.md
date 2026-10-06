@@ -17,9 +17,9 @@ The interface uses a dark editorial palette, restrained lime accent, responsive 
 ## Setup
 
 1. Install project dependencies from the repository root with `npm install`.
-2. Copy `Backend/.env.example` to `Backend/.env`; set the MySQL connection values and replace both admin passwords and `SESSION_SECRET` with private values.
+2. Copy `Backend/.env.example` to `Backend/.env` (PowerShell: `Copy-Item Backend\.env.example Backend\.env`). Set the MySQL connection values, including the password for your MySQL user, and replace both admin passwords and `SESSION_SECRET` with private values.
 3. Ensure the MySQL user can create a database. On first backend startup, the app creates the configured database and tables and seeds the seven competition names. Alternatively, import `Backend/schema.sql` with a MySQL user that can create databases. The schema file uses the default database name `medasport`; update its `CREATE DATABASE` and `USE` statements if using a different name.
-4. Start the API with `npm run dev:backend` and the Vue dev server in another terminal with `npm run dev:frontend`.
+4. From the repository root, run `npm run dev` to start the API and Vue dev server together. Alternatively, run `npm run dev:backend` and `npm run dev:frontend` in separate terminals.
 5. Open `http://localhost:5173`. Vite proxies `/api` calls to the backend at `http://localhost:3000`.
 
 For a production-style run, use `npm run build` followed by `npm start`; the backend serves the built frontend from `Frontend/dist`.

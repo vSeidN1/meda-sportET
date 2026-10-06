@@ -4,9 +4,13 @@
   "private": true,
   "workspaces": ["Frontend", "Backend"],
   "scripts": {
+    "dev": "concurrently -k -n backend,frontend -c blue,green \"npm:dev:backend\" \"npm:dev:frontend\"",
     "dev:frontend": "npm run dev --workspace Frontend",
     "dev:backend": "npm run dev --workspace Backend",
     "build": "npm run build --workspace Frontend",
     "start": "npm start --workspace Backend"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2"
   }
 }
