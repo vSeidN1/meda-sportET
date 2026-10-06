@@ -65,6 +65,19 @@ const parseId = (value) =>
   /^\d+$/.test(String(value)) && Number(value) > 0 ? Number(value) : null;
 const cleanText = (value, max) =>
   typeof value === "string" ? value.trim().slice(0, max) : "";
+const COMMENTER_ID_PATTERN =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+function getCommenterId(req) {
+  const value = req.get("X-Commenter-Id") || "";
+  return COMMENTER_ID_PATTERN.test(value) ? value.toLowerCase() : null;
+}
+function serializeComment(comment, req) {
+  const { owner_token: ownerToken, ...serialized } = comment;
+  return {
+    ...serialized,
+    is_owner: Boolean(ownerToken && ownerToken === getCommenterId(req)),
+  };
+}
 const escapeHtml = (value = "") =>
   String(value)
     .replace(/&/g, "&amp;")
@@ -179,11 +192,14 @@ app.get(
     const [[post]] = await query("SELECT * FROM posts WHERE id = ?", [id]);
     if (!post) return notFound(res, "Article");
     const [comments] = await query(
-      "SELECT id, name, comment_text, created_at FROM comments WHERE post_id = ? ORDER BY created_at DESC",
+      "SELECT id, name, owner_token, comment_text, created_at FROM comments WHERE post_id = ? ORDER BY created_at DESC",
       [id],
     );
     post.liked = Boolean(req.session.likedPosts?.[id]);
-    res.json({ ...post, comments });
+    res.json({
+      ...post,
+      comments: comments.map((entry) => serializeComment(entry, req)),
+    });
   }),
 );
 
@@ -217,6 +233,9 @@ app.post(
     const id = parseId(req.params.id);
     if (!id) return notFound(res, "Article");
 
+    const ownerToken = getCommenterId(req);
+    if (!ownerToken)
+      return res.status(400).json({ error: "Comment identity is required." });
     const name = cleanText(req.body.name, 100);
     const comment = cleanText(req.body.comment_text, 3000);
 
@@ -225,14 +244,14 @@ app.post(
     const [[post]] = await query("SELECT id FROM posts WHERE id = ?", [id]);
     if (!post) return notFound(res, "Article");
     const [result] = await query(
-      "INSERT INTO comments (post_id, name, comment_text) VALUES (?, ?, ?)",
-      [id, name, comment],
+      "INSERT INTO comments (post_id, name, owner_token, comment_text) VALUES (?, ?, ?, ?)",
+      [id, name, ownerToken, comment],
     );
     const [[saved]] = await query(
-      "SELECT id, name, comment_text, created_at FROM comments WHERE id = ?",
+      "SELECT id, name, owner_token, comment_text, created_at FROM comments WHERE id = ?",
       [result.insertId],
     );
-    res.status(201).json({ comment: saved });
+    res.status(201).json({ comment: serializeComment(saved, req) });
   }),
 );
 
@@ -244,21 +263,18 @@ app.put(
     if (!postId) return notFound(res, "Article");
     if (!commentId) return notFound(res, "Comment");
 
-    const incomingName = cleanText(req.body.name, 100);
+    const ownerToken = getCommenterId(req);
     const comment = cleanText(req.body.comment_text, 3000);
     if (!comment) {
       return res.status(400).json({ error: "Comment text is required." });
     }
 
     const [[existing]] = await query(
-      "SELECT id, name FROM comments WHERE id = ? AND post_id = ?",
+      "SELECT id, owner_token FROM comments WHERE id = ? AND post_id = ?",
       [commentId, postId],
     );
     if (!existing) return notFound(res, "Comment");
-    if (
-      incomingName &&
-      incomingName.toLowerCase() !== existing.name.toLowerCase()
-    ) {
+    if (!ownerToken || ownerToken !== existing.owner_token) {
       return res
         .status(403)
         .json({ error: "You can only edit your own comment." });
@@ -269,10 +285,10 @@ app.put(
       commentId,
     ]);
     const [[updated]] = await query(
-      "SELECT id, name, comment_text, created_at FROM comments WHERE id = ?",
+      "SELECT id, name, owner_token, comment_text, created_at FROM comments WHERE id = ?",
       [commentId],
     );
-    res.json({ comment: updated });
+    res.json({ comment: serializeComment(updated, req) });
   }),
 );
 
@@ -284,16 +300,13 @@ app.delete(
     if (!postId) return notFound(res, "Article");
     if (!commentId) return notFound(res, "Comment");
 
-    const incomingName = cleanText(req.body.name, 100);
+    const ownerToken = getCommenterId(req);
     const [[existing]] = await query(
-      "SELECT id, name FROM comments WHERE id = ? AND post_id = ?",
+      "SELECT id, owner_token FROM comments WHERE id = ? AND post_id = ?",
       [commentId, postId],
     );
     if (!existing) return notFound(res, "Comment");
-    if (
-      incomingName &&
-      incomingName.toLowerCase() !== existing.name.toLowerCase()
-    ) {
+    if (!ownerToken || ownerToken !== existing.owner_token) {
       return res
         .status(403)
         .json({ error: "You can only delete your own comment." });
@@ -336,11 +349,14 @@ app.get(
     );
     if (!highlight) return notFound(res, "Highlight");
     const [comments] = await query(
-      "SELECT id, name, comment_text, created_at FROM comments WHERE highlight_id = ? ORDER BY created_at DESC",
+      "SELECT id, name, owner_token, comment_text, created_at FROM comments WHERE highlight_id = ? ORDER BY created_at DESC",
       [id],
     );
     highlight.liked = Boolean(req.session.likedHighlights?.[id]);
-    res.json({ ...highlight, comments });
+    res.json({
+      ...highlight,
+      comments: comments.map((entry) => serializeComment(entry, req)),
+    });
   }),
 );
 app.post(
@@ -375,6 +391,9 @@ app.post(
   asyncRoute(async (req, res) => {
     const id = parseId(req.params.id);
     if (!id) return notFound(res, "Highlight");
+    const ownerToken = getCommenterId(req);
+    if (!ownerToken)
+      return res.status(400).json({ error: "Comment identity is required." });
     const name = cleanText(req.body.name, 100);
     const comment = cleanText(req.body.comment_text, 3000);
     if (!name || !comment)
@@ -385,14 +404,14 @@ app.post(
     );
     if (!item) return notFound(res, "Highlight");
     const [result] = await query(
-      "INSERT INTO comments (highlight_id, name, comment_text) VALUES (?, ?, ?)",
-      [id, name, comment],
+      "INSERT INTO comments (highlight_id, name, owner_token, comment_text) VALUES (?, ?, ?, ?)",
+      [id, name, ownerToken, comment],
     );
     const [[saved]] = await query(
-      "SELECT id, name, comment_text, created_at FROM comments WHERE id = ?",
+      "SELECT id, name, owner_token, comment_text, created_at FROM comments WHERE id = ?",
       [result.insertId],
     );
-    res.status(201).json({ comment: saved });
+    res.status(201).json({ comment: serializeComment(saved, req) });
   }),
 );
 
@@ -404,21 +423,18 @@ app.put(
     if (!highlightId) return notFound(res, "Highlight");
     if (!commentId) return notFound(res, "Comment");
 
-    const incomingName = cleanText(req.body.name, 100);
+    const ownerToken = getCommenterId(req);
     const comment = cleanText(req.body.comment_text, 3000);
     if (!comment) {
       return res.status(400).json({ error: "Comment text is required." });
     }
 
     const [[existing]] = await query(
-      "SELECT id, name FROM comments WHERE id = ? AND highlight_id = ?",
+      "SELECT id, owner_token FROM comments WHERE id = ? AND highlight_id = ?",
       [commentId, highlightId],
     );
     if (!existing) return notFound(res, "Comment");
-    if (
-      incomingName &&
-      incomingName.toLowerCase() !== existing.name.toLowerCase()
-    ) {
+    if (!ownerToken || ownerToken !== existing.owner_token) {
       return res
         .status(403)
         .json({ error: "You can only edit your own comment." });
@@ -429,10 +445,10 @@ app.put(
       commentId,
     ]);
     const [[updated]] = await query(
-      "SELECT id, name, comment_text, created_at FROM comments WHERE id = ?",
+      "SELECT id, name, owner_token, comment_text, created_at FROM comments WHERE id = ?",
       [commentId],
     );
-    res.json({ comment: updated });
+    res.json({ comment: serializeComment(updated, req) });
   }),
 );
 
@@ -444,16 +460,13 @@ app.delete(
     if (!highlightId) return notFound(res, "Highlight");
     if (!commentId) return notFound(res, "Comment");
 
-    const incomingName = cleanText(req.body.name, 100);
+    const ownerToken = getCommenterId(req);
     const [[existing]] = await query(
-      "SELECT id, name FROM comments WHERE id = ? AND highlight_id = ?",
+      "SELECT id, owner_token FROM comments WHERE id = ? AND highlight_id = ?",
       [commentId, highlightId],
     );
     if (!existing) return notFound(res, "Comment");
-    if (
-      incomingName &&
-      incomingName.toLowerCase() !== existing.name.toLowerCase()
-    ) {
+    if (!ownerToken || ownerToken !== existing.owner_token) {
       return res
         .status(403)
         .json({ error: "You can only delete your own comment." });

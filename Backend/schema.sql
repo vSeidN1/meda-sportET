@@ -32,6 +32,7 @@ CREATE TABLE IF NOT EXISTS comments (
   post_id INT UNSIGNED NULL,
   highlight_id INT UNSIGNED NULL,
   name VARCHAR(100) NOT NULL,
+  owner_token CHAR(36) NULL,
   comment_text TEXT NOT NULL,
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   CONSTRAINT chk_comment_target CHECK ((post_id IS NOT NULL AND highlight_id IS NULL) OR (post_id IS NULL AND highlight_id IS NOT NULL)),

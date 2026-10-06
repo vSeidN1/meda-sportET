@@ -31,7 +31,6 @@ const formatDateTime = (value) =>
     hour12: false,
   }).format(new Date(value));
 
-const COMMENT_NAME_KEY = "medasport-comment-name";
 const props = defineProps({ id: { type: String, required: true } });
 const route = useRoute();
 const item = ref(null);
@@ -44,29 +43,16 @@ const editingCommentId = ref(null);
 const isHighlight = computed(
   () => route.meta.highlight === true || route.path.startsWith("/highlights/"),
 );
-const currentUserName = computed(() => name.value.trim());
 const itemApi = () =>
   isHighlight.value ? api.highlight(props.id) : api.post(props.id);
 
-function persistName() {
-  const trimmed = name.value.trim();
-  if (trimmed) localStorage.setItem(COMMENT_NAME_KEY, trimmed);
-  else localStorage.removeItem(COMMENT_NAME_KEY);
-}
-
 function isOwnComment(entry) {
-  return Boolean(
-    entry &&
-    currentUserName.value &&
-    entry.name?.trim().toLowerCase() === currentUserName.value.toLowerCase(),
-  );
+  return Boolean(entry?.is_owner);
 }
 
 function startEditing(entry) {
   editingCommentId.value = entry.id;
-  name.value = entry.name;
   comment.value = entry.comment_text;
-  persistName();
 }
 
 function cancelEditing() {
@@ -78,11 +64,10 @@ async function deleteComment(entry) {
   if (!window.confirm("Delete this comment?")) return;
   error.value = "";
   try {
-    const requestBody = { name: name.value.trim() };
     if (isHighlight.value) {
-      await api.deleteHighlightComment(props.id, entry.id, requestBody);
+      await api.deleteHighlightComment(props.id, entry.id);
     } else {
-      await api.deletePostComment(props.id, entry.id, requestBody);
+      await api.deletePostComment(props.id, entry.id);
     }
     item.value.comments = item.value.comments.filter(
       (itemEntry) => itemEntry.id !== entry.id,
@@ -105,12 +90,10 @@ async function load() {
 }
 
 onMounted(() => {
-  const savedName = localStorage.getItem(COMMENT_NAME_KEY) || "";
-  if (savedName) name.value = savedName;
+  localStorage.removeItem("medasport-comment-name");
   load();
 });
 watch(() => [props.id, route.meta.highlight], load);
-watch(name, () => persistName());
 
 function focusCommentInput() {
   if (route.hash !== "#comment-input") return;
@@ -146,7 +129,7 @@ async function toggleLike() {
 async function sendComment() {
   const trimmedName = name.value.trim();
   const trimmedComment = comment.value.trim();
-  if (!trimmedName) {
+  if (!editingCommentId.value && !trimmedName) {
     error.value = "Please enter your name.";
     return;
   }
@@ -158,8 +141,8 @@ async function sendComment() {
   sending.value = true;
   error.value = "";
   try {
-    const requestBody = { name: trimmedName, comment_text: trimmedComment };
     if (editingCommentId.value) {
+      const requestBody = { comment_text: trimmedComment };
       const result = isHighlight.value
         ? await api.updateHighlightComment(
             props.id,
@@ -180,11 +163,16 @@ async function sendComment() {
       return;
     }
 
+    const requestBody = {
+      name: trimmedName,
+      comment_text: trimmedComment,
+    };
     const result = isHighlight.value
       ? await api.commentHighlight(props.id, requestBody)
       : await api.commentPost(props.id, requestBody);
 
     item.value.comments.unshift(result.comment);
+    name.value = "";
     comment.value = "";
   } catch (err) {
     error.value = err.message;
@@ -245,7 +233,7 @@ async function sendComment() {
               class="field"
               placeholder="Your name"
               maxlength="100"
-              required
+              :required="!editingCommentId"
             /><textarea
               id="comment-input"
               v-model.trim="comment"

@@ -33,6 +33,17 @@ async function initializeDatabase() {
       "",
     );
     await connection.query(schema);
+    const [[ownerTokenColumn]] = await connection.query(
+      `SELECT COUNT(*) AS column_exists
+       FROM information_schema.COLUMNS
+       WHERE TABLE_SCHEMA = ? AND TABLE_NAME = 'comments' AND COLUMN_NAME = 'owner_token'`,
+      [databaseName],
+    );
+    if (!Number(ownerTokenColumn.column_exists)) {
+      await connection.query(
+        "ALTER TABLE comments ADD COLUMN owner_token CHAR(36) NULL",
+      );
+    }
     const indexStatements = [
       "CREATE UNIQUE INDEX uq_standings_league_club ON standings (league, club_name)",
       "CREATE UNIQUE INDEX uq_scorers_league_player ON scorers (league, player_name)",
